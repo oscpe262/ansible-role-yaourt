@@ -1,0 +1,53 @@
+## roles/yaourt/tasks/main.yml
+## Role main file
+# vim:ft=ansible:
+---
+- name: check if yaourt is installed
+  shell: pacman -Q yaourt
+  ignore_errors: yes
+  register: yaourt_check
+  when: ansible_distribution == "Archlinux"
+
+- name: check if pacaur is installed
+  shell: pacman -Q pacaur
+  ignore_errors: yes
+  register: pacaur_check
+  when: ansible_distribution == "Archlinux"
+  tags: pacaur
+
+- name: "add archlinux.fr repository to pacman"
+  lineinfile:
+    dest: "/etc/pacman.conf"
+    state: "present"
+    line: "{{ item }}"
+  with_items:
+    - "[archlinuxfr]"
+    - "SigLevel = Never"
+    - "Server = http://repo.archlinux.fr/$arch"
+  when: yaourt_check.rc != 0 
+
+- name: "install yaourt"
+  pacman:
+    update_cache: yes
+    name: "yaourt"
+    state: "present"
+  when: yaourt_check.rc != 0 
+
+- name: "install pacaur"
+  yaourt:
+    name: pacaur
+    state: "present"
+  when: pacaur_check.rc != 0
+  tags: pacaur
+
+- name: "remove archlinux.fr repository"
+  lineinfile:
+    dest: "/etc/pacman.conf"
+    state: "absent"
+    line: "{{ item }}"
+  with_items:
+    - "[archlinuxfr]"
+    - "SigLevel = Never"
+    - "Server = http://repo.archlinux.fr/$arch"
+  when: yaourt_check.rc != 0 
+...
