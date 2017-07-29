@@ -33,11 +33,17 @@
     state: "present"
   when: yaourt_check.rc != 0 
 
+- name: "yaourtrc template"
+  template:
+    src: yaourtrc.j2
+    dest: /etc/yaourtrc
+
 - name: "install pacaur"
   yaourt:
     name: pacaur
     state: "present"
   when: pacaur_check.rc != 0
+  ignore_errors: yes
   tags: pacaur
 
 - name: "remove archlinux.fr repository"
