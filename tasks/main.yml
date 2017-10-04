@@ -6,13 +6,13 @@
   shell: pacman -Q yaourt
   ignore_errors: yes
   register: yaourt_check
-  when: ansible_distribution == "Archlinux"
+  when: ansible_distribution == "Arch Linux"
 
 - name: check if pacaur is installed
   shell: pacman -Q pacaur
   ignore_errors: yes
   register: pacaur_check
-  when: ansible_distribution == "Archlinux"
+  when: ansible_distribution == "Arch Linux"
   tags: pacaur
 
 - name: "add archlinux.fr repository to pacman"
@@ -43,8 +43,11 @@
     name: pacaur
     state: "present"
   when: pacaur_check.rc != 0
+  become: yes
+  become_user: '{{ aur_user }}'
   ignore_errors: yes
   tags: pacaur
+  # TODO: as_user
 
 - name: "remove archlinux.fr repository"
   lineinfile:
