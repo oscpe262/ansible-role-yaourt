@@ -6,13 +6,13 @@
   shell: pacman -Q yaourt
   ignore_errors: yes
   register: yaourt_check
-  when: ansible_distribution == "Arch Linux"
+  when: "'Arch' in ansible_distribution" 
 
 - name: check if pacaur is installed
   shell: pacman -Q pacaur
   ignore_errors: yes
   register: pacaur_check
-  when: ansible_distribution == "Arch Linux"
+  when: "'Arch' in ansible_distribution" 
   tags: pacaur
 
 - name: "add archlinux.fr repository to pacman"
